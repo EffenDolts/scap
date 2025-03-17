@@ -1,0 +1,2 @@
+# scap
+Screen capture class
