@@ -303,5 +303,62 @@ void Scap::copySrcDst()
   }
 }
 
-#if 0
-#endif
+void Scap::readBmpFile(const char* BmpName)
+{
+    // Open the BMP file
+    HANDLE hFile = CreateFileA(BmpName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE) {
+        cerr << "Could not open file: " << BmpName << endl;
+        return;
+    }
+
+    // Read the BMP file header
+    BITMAPFILEHEADER fileHeader;
+    DWORD bytesRead;
+    if (!ReadFile(hFile, &fileHeader, sizeof(BITMAPFILEHEADER), &bytesRead, NULL)) {
+        cerr << "Error reading BMP file header." << endl;
+        CloseHandle(hFile);
+        return;
+    }
+
+    // Read the BMP info header
+    BITMAPINFOHEADER infoHeader;
+    if (!ReadFile(hFile, &infoHeader, sizeof(BITMAPINFOHEADER), &bytesRead, NULL)) {
+        cerr << "Error reading BMP info header." << endl;
+        CloseHandle(hFile);
+        return;
+    }
+
+    // Allocate memory for the image data
+    DWORD imageSize = infoHeader.biSizeImage;
+    if (imageSize == 0) {
+        imageSize = infoHeader.biWidth * infoHeader.biHeight * (infoHeader.biBitCount / 8);
+    }
+    m_imgSize = imageSize;
+    m_fileSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + m_imgSize;
+    m_bmpData = (char*)GlobalAlloc(GMEM_FIXED, m_fileSize);
+    m_image = (RGBQUAD*)&m_bmpData[sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER)];
+
+    // Copy the headers
+    memcpy(m_bmpData, &fileHeader, sizeof(BITMAPFILEHEADER));
+    memcpy(m_bmpData + sizeof(BITMAPFILEHEADER), &infoHeader, sizeof(BITMAPINFOHEADER));
+
+    // Read the image data
+    if (!ReadFile(hFile, m_image, m_imgSize, &bytesRead, NULL)) {
+        cerr << "Error reading BMP image data." << endl;
+        GlobalFree(m_bmpData);
+        CloseHandle(hFile);
+        return;
+    }
+
+    // Close the BMP file
+    CloseHandle(hFile);
+
+    // Update the class members
+    m_bfSize = sizeof(BITMAPFILEHEADER);
+    m_biSize = sizeof(BITMAPINFOHEADER);
+    m_width = infoHeader.biWidth;
+    m_height = infoHeader.biHeight;
+    
+    cout << "BMP file read successfully: " << BmpName << endl;
+}
