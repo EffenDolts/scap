@@ -1,7 +1,18 @@
 # scap
 Screen capture class
 
-Constructor takes screen coordinates (int x1, int y1, int x2, int y2) and creates a buffer for screen capture
-CopyScreen() initiate the actual screen capture
-write(const char * BmpName, int spec) writes a BMP format file with the contents of the capture buffer or a
-secondary buffer that typically contains a modified version of the original screen capture
+Purpose of This Repository
+
+The purpose of the scap repository is to provide a screen capture class. This class is designed to capture a specified rectangular area of the screen using the Windows API and save the captured content as a BMP image file. The README provides an overview of the class's functionality, including its constructor and methods for capturing and writing screen data.
+
+Features and Technologies Used
+
+The repository contains the implementation of a screen capture class. The key features include:
+
+A constructor that initializes the screen capture area using specified coordinates.
+
+A CopyScreen() method to perform the actual screen capture by reading the screen data within the specified coordinates.
+
+A write() method to save the captured screen content to a BMP file, either from the primary capture buffer or a secondary buffer with potentially modified content.
+
+Technologies used include the Windows API for screen capturing and C or C++ for handling image processing and file writing.
