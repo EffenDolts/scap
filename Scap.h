@@ -26,6 +26,7 @@ protected:
 public:
   Scap(int x1, int y1, int x2, int y2);
   virtual ~Scap();
+  void readBmpFile(const char* BmpName);
   void ScreenShot(const char * BmpName);
   void CopyScreen();
   void write(const char * BmpName);
